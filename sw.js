@@ -1,4 +1,4 @@
-const CACHE_NAME = 'town-and-learn-v1';
+const CACHE_NAME = 'town-and-learn-v2';
 const ASSETS = [
   './',
   './index.html',
