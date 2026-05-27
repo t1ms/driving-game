@@ -1,4 +1,4 @@
-const CACHE_NAME = 'town-and-learn-v1';
+const CACHE_NAME = 'town-and-learn-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -51,7 +51,7 @@ self.addEventListener('fetch', event => {
           if (networkResponse.status === 200) {
             caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse));
           }
-        }).catch(() => {/* Ignore network errors offline */});
+        }).catch(() => {/* Ignore network errors offline */ });
 
         return cachedResponse;
       }
