@@ -311,6 +311,7 @@ const Puzzles = {
     const text = document.getElementById("scripture-text");
     const citation = document.getElementById("scripture-citation");
     const okBtn = document.getElementById("scripture-card-ok");
+    const scriptureCloseBtn = document.getElementById("scripture-close-btn");
 
     const data = this.currentScripture;
     text.textContent = `"${data.verse}"`;
@@ -319,12 +320,15 @@ const Puzzles = {
     overlay.classList.add("active");
     this.playRewardSound(true);
 
-    okBtn.onclick = () => {
+    const closeHandler = () => {
       overlay.classList.remove("active");
       this.activeQuest.scrollCollected = true;
       this.updateHUD();
       if (onClosedCallback) onClosedCallback();
     };
+
+    okBtn.onclick = closeHandler;
+    if (scriptureCloseBtn) scriptureCloseBtn.onclick = closeHandler;
   },
 
   // Open multiple-choice interactive Bible puzzle
@@ -334,6 +338,7 @@ const Puzzles = {
     const body = document.getElementById("puzzle-body");
     const choicesContainer = document.getElementById("puzzle-choices");
     const closeBtn = document.getElementById("puzzle-close");
+    const puzzleCloseBtnTop = document.getElementById("puzzle-close-btn");
 
     choicesContainer.innerHTML = "";
     overlay.classList.add("active");
@@ -361,9 +366,12 @@ const Puzzles = {
       choicesContainer.appendChild(btn);
     });
 
-    closeBtn.onclick = () => {
+    const closeHandler = () => {
       overlay.classList.remove("active");
     };
+
+    closeBtn.onclick = closeHandler;
+    if (puzzleCloseBtnTop) puzzleCloseBtnTop.onclick = closeHandler;
   },
 
   // Handle successful completion of floor scripture
@@ -386,6 +394,7 @@ const Puzzles = {
     const icon = document.getElementById("reward-item-icon");
     const name = document.getElementById("reward-item-name");
     const nextBtn = document.getElementById("next-floor-btn");
+    const clearCloseBtn = document.getElementById("level-clear-close-btn");
 
     label.textContent = `You completed Floor ${this.currentFloor}!`;
     icon.textContent = data.rewardIcon;
@@ -393,7 +402,7 @@ const Puzzles = {
 
     overlay.classList.add("active");
 
-    nextBtn.onclick = () => {
+    const proceedHandler = () => {
       overlay.classList.remove("active");
       this.stars += 10; // add star bundle
 
@@ -412,7 +421,11 @@ const Puzzles = {
         onFinishedCallback(true);
       }
     };
+
+    nextBtn.onclick = proceedHandler;
+    if (clearCloseBtn) clearCloseBtn.onclick = proceedHandler;
   },
+
 
   // Setup the Garage selectors inside grid cards
   initGarageUI() {

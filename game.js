@@ -293,9 +293,24 @@ window.addEventListener('load', () => {
     garageOverlay.classList.add('active');
   });
 
-  closeGarageBtn.addEventListener('click', () => {
+  const closeGarageHandler = () => {
     garageOverlay.classList.remove('active');
-  });
+  };
+  closeGarageBtn.addEventListener('click', closeGarageHandler);
+  
+  const closeGarageBtnTop = document.getElementById('garage-close-btn-top');
+  if (closeGarageBtnTop) {
+    closeGarageBtnTop.addEventListener('click', closeGarageHandler);
+  }
+
+  // Victory screen close button binding
+  const victoryCloseBtn = document.getElementById('victory-close-btn');
+  if (victoryCloseBtn) {
+    victoryCloseBtn.addEventListener('click', () => {
+      document.getElementById('victory-overlay').classList.remove('active');
+    });
+  }
+
 
   // Handle Joystick Touch tracking
   joystickContainer.addEventListener('mousedown', startDrag);
@@ -429,9 +444,19 @@ window.addEventListener('load', () => {
     if (keys.d || keys.ArrowRight) turn = 1;
 
     if (joystick.active) {
-      forward = -joystick.dy;
-      turn = joystick.dx;
+      const pushForce = Math.hypot(joystick.dx, joystick.dy);
+      if (pushForce > 0.15) {
+        const targetAngle = Math.atan2(joystick.dy, joystick.dx);
+        let angleDiff = targetAngle - car.angle;
+        angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
+        car.angle += angleDiff * 0.18;
+        forward = pushForce;
+      } else {
+        forward = 0;
+      }
+      turn = 0;
     }
+
 
     // Boosted speed calculation
     const activeMaxSpeed = car.speedBoostTimer > 0 ? car.maxSpeed * 1.5 : car.maxSpeed;

@@ -101,6 +101,7 @@
   <!-- Educational / Scripture Puzzle Modal -->
   <div id="puzzle-overlay">
     <div class="puzzle-card">
+      <button class="popup-close-btn" id="puzzle-close-btn">&times;</button>
       <h2 class="puzzle-title" id="puzzle-header">Bible Scripture Quest!</h2>
       <p class="puzzle-prompt" id="puzzle-body">Fill in the blank of the scripture you found!</p>
       
@@ -114,6 +115,7 @@
   <!-- Scripture Scroll Card Popup -->
   <div id="scripture-card-overlay" class="screen-overlay">
     <div class="scripture-card animate-pop">
+      <button class="popup-close-btn" id="scripture-close-btn">&times;</button>
       <div class="scroll-icon-top">📜✨</div>
       <h2 class="scripture-card-title">You Found a Scripture Scroll!</h2>
       <div class="scripture-quote-box">
@@ -128,6 +130,7 @@
   <!-- Floor transition / Level Up Modal -->
   <div id="level-clear-overlay" class="screen-overlay">
     <div class="clear-card animate-pop">
+      <button class="popup-close-btn" id="level-clear-close-btn">&times;</button>
       <h1 class="clear-title">🎉 FLOOR CLEARED! 🎉</h1>
       <p class="clear-subtitle" id="clear-floor-num">You completed Floor 1!</p>
       
@@ -144,6 +147,7 @@
   <!-- Customisation Garage screen modal -->
   <div id="garage-overlay" class="screen-overlay">
     <div class="garage-card animate-pop">
+      <button class="popup-close-btn" id="garage-close-btn-top">&times;</button>
       <h1 class="garage-title">🔧 Car Customisation Garage 🏎</h1>
       <p style="margin-bottom: 20px; font-weight:600; color: #475569;">Unlock items by collecting Scripture Scrolls on higher floors!</p>
       
@@ -168,12 +172,14 @@
   <!-- Game Win Screen -->
   <div id="victory-overlay" class="screen-overlay">
     <div class="victory-card animate-pop">
+      <button class="popup-close-btn" id="victory-close-btn">&times;</button>
       <h1 class="victory-title">👑 SUPER DRIVER VICTORY! 👑</h1>
       <p class="victory-text">Wow! You completed all 10 Floors and memorized 10 Bible Scriptures!</p>
       <div style="font-size: 4.5rem; margin: 20px 0;">🏆🌟🏎🌟🏆</div>
       <button class="play-btn" onclick="location.reload()">Drive Again! 🔄</button>
     </div>
   </div>
+
 
   <!-- Scripts -->
   <script src="assets.js"></script>
