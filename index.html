@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Town & Learn - A top-down driving game for children, designed to teach colors, numbers, shapes, and NKJV Bible scriptures while driving around a friendly cartoon town.">
+  
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Town & Learn">
+  <meta name="mobile-web-app-capable" content="yes">
+  
+  <title>Town & Learn - Top-Down Driving Game for Kids</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+
+  <script>
+    // Register PWA Service Worker for Offline Play
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registered successfully!', reg.scope))
+          .catch(err => console.log('Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Splash Screen / Main Menu -->
+  <div id="splash-screen">
+    <h1 class="splash-title">Town & Learn 🚗💨</h1>
+    <p style="font-size: 1.4rem; color: #0369a1; font-weight: 600; margin-bottom: 2rem; text-align: center; max-width: 500px; padding: 0 20px;">
+      Drive around, dodge crossing ducks, collect Scripture scrolls, and unlock cool upgrades for your car!
+    </p>
+    <div class="splash-car">
+      <svg viewBox="0 0 100 60" width="100" height="60">
+        <rect x="10" y="20" width="80" height="25" rx="8" fill="#ff477e" />
+        <rect x="25" y="5" width="50" height="20" rx="8" fill="#4cc9f0" />
+        <circle cx="30" cy="45" r="10" fill="#1e293b" stroke="white" stroke-width="2" />
+        <circle cx="70" cy="45" r="10" fill="#1e293b" stroke="white" stroke-width="2" />
+        <circle cx="85" cy="27" r="4" fill="#facc15" />
+      </svg>
+    </div>
+    <button class="play-btn" id="start-btn">Let's Drive!</button>
+  </div>
+
+  <!-- Interactive Game Canvas -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- Heads Up Display Overlay -->
+  <div id="hud">
+    <div class="hud-top-bar">
+      <div class="hud-left-group">
+        <!-- Floor Progress HUD -->
+        <div class="hud-panel" id="floor-hud">
+          <div class="hud-text" id="floor-count">Floor 1/10</div>
+        </div>
+
+        <!-- Stars HUD -->
+        <div class="hud-panel" id="stars-hud">
+          <div class="star-icon">⭐</div>
+          <div class="hud-text" id="star-count">0</div>
+        </div>
+      </div>
+
+      <div class="hud-right-group">
+        <button id="mute-btn">🎵 Music: ON</button>
+        <button id="garage-btn">🔧 Garage</button>
+        
+        <!-- Active Quest Indicator -->
+        <div class="hud-panel" id="quest-hud">
+          <div class="hud-text" id="quest-text">Collect Scripture!</div>
+          <div class="quest-icon" id="quest-icon-box">📜</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Virtual Joystick for Touch Devices -->
+    <div id="joystick-container">
+      <div id="joystick-knob"></div>
+    </div>
+
+    <!-- Honk Button -->
+    <button id="honk-btn">HONK! 📣</button>
+  </div>
+
+  <!-- NPC Speech Dialogue Card -->
+  <div id="dialog-overlay">
+    <canvas id="npc-avatar-canvas" class="npc-avatar" width="90" height="90"></canvas>
+    <div class="npc-content">
+      <div class="npc-name" id="npc-title">Mayor Teddy</div>
+      <div class="npc-text" id="npc-speech">Welcome to our town! Let's search the streets to find the Scripture Scroll!</div>
+    </div>
+  </div>
+
+  <!-- Educational / Scripture Puzzle Modal -->
+  <div id="puzzle-overlay">
+    <div class="puzzle-card">
+      <h2 class="puzzle-title" id="puzzle-header">Bible Scripture Quest!</h2>
+      <p class="puzzle-prompt" id="puzzle-body">Fill in the blank of the scripture you found!</p>
+      
+      <!-- Option selection containers (dynamically rendered) -->
+      <div class="puzzle-options" id="puzzle-choices"></div>
+      
+      <button class="puzzle-close-btn" id="puzzle-close">Close</button>
+    </div>
+  </div>
+
+  <!-- Scripture Scroll Card Popup -->
+  <div id="scripture-card-overlay" class="screen-overlay">
+    <div class="scripture-card animate-pop">
+      <div class="scroll-icon-top">📜✨</div>
+      <h2 class="scripture-card-title">You Found a Scripture Scroll!</h2>
+      <div class="scripture-quote-box">
+        <p class="scripture-verse" id="scripture-text">"God is love."</p>
+        <p class="scripture-citation" id="scripture-citation">— 1 John 4:8 (NKJV)</p>
+      </div>
+      <p class="scripture-tip">Remember this verse to help complete the quest!</p>
+      <button class="big-green-btn" id="scripture-card-ok">I Memorized It!</button>
+    </div>
+  </div>
+
+  <!-- Floor transition / Level Up Modal -->
+  <div id="level-clear-overlay" class="screen-overlay">
+    <div class="clear-card animate-pop">
+      <h1 class="clear-title">🎉 FLOOR CLEARED! 🎉</h1>
+      <p class="clear-subtitle" id="clear-floor-num">You completed Floor 1!</p>
+      
+      <div class="reward-box">
+        <p class="reward-title">🎁 SCRIPTURE REWARD UNLOCKED! 🎁</p>
+        <div class="reward-graphic" id="reward-item-icon">🐰</div>
+        <p class="reward-name" id="reward-item-name">Cute Bunny Ears (Decal)</p>
+      </div>
+
+      <button class="big-green-btn" id="next-floor-btn">Drive to Next Floor! ➔</button>
+    </div>
+  </div>
+
+  <!-- Customisation Garage screen modal -->
+  <div id="garage-overlay" class="screen-overlay">
+    <div class="garage-card animate-pop">
+      <h1 class="garage-title">🔧 Car Customisation Garage 🏎</h1>
+      <p style="margin-bottom: 20px; font-weight:600; color: #475569;">Unlock items by collecting Scripture Scrolls on higher floors!</p>
+      
+      <div class="garage-section">
+        <h3>🎨 Select Car Color</h3>
+        <div class="garage-grid" id="paint-choices">
+          <!-- Paint swatches populated dynamically -->
+        </div>
+      </div>
+
+      <div class="garage-section">
+        <h3>🎀 Select Car Roof Accessories</h3>
+        <div class="garage-grid" id="accessory-choices">
+          <!-- Decal selectors populated dynamically -->
+        </div>
+      </div>
+
+      <button class="big-red-btn" id="close-garage-btn">Back to Town ➔</button>
+    </div>
+  </div>
+
+  <!-- Game Win Screen -->
+  <div id="victory-overlay" class="screen-overlay">
+    <div class="victory-card animate-pop">
+      <h1 class="victory-title">👑 SUPER DRIVER VICTORY! 👑</h1>
+      <p class="victory-text">Wow! You completed all 10 Floors and memorized 10 Bible Scriptures!</p>
+      <div style="font-size: 4.5rem; margin: 20px 0;">🏆🌟🏎🌟🏆</div>
+      <button class="play-btn" onclick="location.reload()">Drive Again! 🔄</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets.js"></script>
+  <script src="puzzles.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
